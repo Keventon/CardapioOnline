@@ -12,11 +12,10 @@ import { useState } from "react";
 import { useNavigation } from "expo-router";
 
 export default function Cart() {
+  const [address, setAddress] = useState("");
   const cartStore = useCartStore();
   const navigation = useNavigation();
-  const [address, setAddress] = useState("");
-
-  const number = "+5591955555555";
+  const PHONE_NUMBER_STORE = "";
 
   const total = formatCurrency(
     cartStore.products.reduce(
@@ -26,9 +25,9 @@ export default function Cart() {
   );
 
   function handleProductRemove(product: ProductCartProps) {
-    Alert.alert("Remover", `Deseja remover ${product.title} do carrinho?`, [
+    Alert.alert("Remover", `Desejar remover ${product.title} do carrinho?`, [
       {
-        text: "Cancelar",
+        text: "Canelar",
       },
       {
         text: "Remover",
@@ -39,24 +38,26 @@ export default function Cart() {
 
   function handleOrder() {
     if (address.trim().length === 0) {
-      return Alert.alert("Atenção", "Informe os dados da entrega.");
+      return Alert.alert("Pedido", "Informe os dados da entrega.");
     }
 
     const products = cartStore.products
-      .map((product) => `\n ${product.quantity} ${product.title}`)
+      .map((product) => `\n ${product.quantity}x ${product.title}`)
       .join("");
 
     const message = `
-        🍴 NOVO PEDIDO 🍴
-        \n Entregar em: ${address}
-        ${products}
+    🍴 NOVO PEDIDO 🍴
+    \n Entregar em: ${address}
 
-        \n Valor total: ${total}
-      `;
+    ${products}
+
+    \n Valor total: ${total}
+    `;
 
     Linking.openURL(
-      `https://api.whatsapp.com/send?phone=${number}&text=${message}`
+      `http://api.whatsapp.com/send?phone=${PHONE_NUMBER_STORE}&text=${message}`
     );
+
     cartStore.clear();
     navigation.goBack();
   }
@@ -65,42 +66,44 @@ export default function Cart() {
     <View className="flex-1 pt-8">
       <Header title="Seu carrinho" />
 
-      {cartStore.products.length > 0 ? (
-        <KeyboardAwareScrollView
-          showsVerticalScrollIndicator={false}
-          extraHeight={100}
-        >
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View className="p-5 flex-1">
-              {cartStore.products.map((product) => (
-                <Product
-                  key={product.id}
-                  data={product}
-                  onPress={() => handleProductRemove(product)}
-                />
-              ))}
-              <View className="border-b border-slate-700"></View>
-            </View>
-          </ScrollView>
-        </KeyboardAwareScrollView>
-      ) : (
-        <Text className="font_body text-slate-400 text-center my-8">
-          Seu carrinho está vazio.
-        </Text>
-      )}
+      <KeyboardAwareScrollView>
+        <ScrollView>
+          <View className="p-5 flex-1">
+            {cartStore.products.length > 0 ? (
+              <View className="border-b border-slate-700">
+                {cartStore.products.map((product) => (
+                  <Product
+                    key={product.id}
+                    data={product}
+                    onPress={() => handleProductRemove(product)}
+                  />
+                ))}
+              </View>
+            ) : (
+              <Text className="font-body text-slate-400 text-center my-8">
+                Seu carrinho está vazio.
+              </Text>
+            )}
 
-      <View className="ml-6 mr-6 mb-4">
-        <View className="flex-row gap-2 items-center mt-5 mb-3">
-          <Text className="text-white text-xl font-subtitle">Total:</Text>
-          <Text className="text-lime-400 text-2xl font-heading">{total}</Text>
-        </View>
-        <Input
-          placeholder="Informe o endereço de entrega com rua, bairro, CEP, número e complemento"
-          onChangeText={setAddress}
-          blurOnSubmit={true}
-          onSubmitEditing={handleOrder}
-          returnKeyType="next"
-        />
+            <View className="flex-row gap-2 items-center mt-5 mb-4">
+              <Text className="text-white text-xl font-subtitle">Total:</Text>
+              <Text className="text-lime-400 text-2xl font-heading">
+                {total}
+              </Text>
+            </View>
+
+            <Input
+              placeholder="Informe o endereço de entrega com rua, bairro, CEP, número e complemento..."
+              onChangeText={setAddress}
+              blurOnSubmit={true}
+              onSubmitEditing={handleOrder}
+              returnKeyType="next"
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAwareScrollView>
+
+      <View className="p-5 gap-5">
         <Button onPress={handleOrder}>
           <Button.Text>Enviar pedido</Button.Text>
           <Button.Icon>
@@ -108,7 +111,7 @@ export default function Cart() {
           </Button.Icon>
         </Button>
 
-        <LinkButton className="mt-4" title="Voltar ao cardápio" href="/" />
+        <LinkButton title="Voltar ao cardápio" href="/" />
       </View>
     </View>
   );
