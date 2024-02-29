@@ -49,8 +49,6 @@ npx expo start
 Esse projeto foi realizado durante a Next Level Week orgnaizada pela Rocketseat para desenvolvedores.
 
 
-## 💡 Expressões de gratidão
-
-* Um agradecimento publicamente.
+## ☎️ Contato
 * Para suporte, mande um email para devkeverton@gmail.com.
 * Link para o seu linkedin [Keventon Guimarães](https://www.linkedin.com/in/keventon-rian-guimaraes-goncalves)
